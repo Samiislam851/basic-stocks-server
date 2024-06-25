@@ -1,36 +1,28 @@
-
-// @ts-ignore
 const jwt = require('jsonwebtoken')
 
 const verifyJWT = (req: any, res: any, next: any) => {
 
-    const token = req.headers.authorization?.split(' ')[1]
+    const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {
-        console.log('token was not given');
-        res.status(400).json({ success: false, message: 'token was not given' })
-        return
+        console.log('Token was not given');
+        return res.status(400).json({ success: false, message: 'Token was not given' });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err: Error, decoded: any) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY as string, (err: any, decoded:any) => {
         if (err) {
-            console.error('Token verification failed');
+            console.error('Token verification failed', err);
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
 
-            res.status(401).json({ success: false, message: 'Unauthorized' })
-            return
-
-        } else if (!decoded) {
+        if (!decoded) {
             console.error('Decoded payload is undefined');
-            res.status(500).json({ success: false, message: 'Server Error Payload undefined' })
-            return
+            return res.status(500).json({ success: false, message: 'Server Error: Payload undefined' });
         }
 
-        else {
-            console.log('token verified');
-            req.decoded = decoded
-            next()
-        }
-    })
-
-}
-module.exports = verifyJWT
+        console.log('Token verified');
+        req.decoded = decoded;
+        next();
+    });
+};
+export default verifyJWT
