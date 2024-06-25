@@ -1,21 +1,22 @@
 
+// @ts-ignore
 const jwt = require('jsonwebtoken')
 
-const verifyJWT = (req, res, next) => {
-  
+const verifyJWT = (req: any, res: any, next: any) => {
+
     const token = req.headers.authorization?.split(' ')[1]
-   
+
     if (!token) {
         console.log('token was not given');
         res.status(400).json({ success: false, message: 'token was not given' })
         return
     }
 
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err: Error, decoded: any) => {
         if (err) {
             console.error('Token verification failed');
 
-            res.status(401).json({ success: false, message: 'Unauthorized' }) 
+            res.status(401).json({ success: false, message: 'Unauthorized' })
             return
 
         } else if (!decoded) {
@@ -30,6 +31,6 @@ const verifyJWT = (req, res, next) => {
             next()
         }
     })
- 
+
 }
 module.exports = verifyJWT
